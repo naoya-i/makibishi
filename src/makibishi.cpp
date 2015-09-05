@@ -87,8 +87,15 @@ int main(int argc, char** argv) {
   }
 
   // Wait for children.
-  int status;
-  wait(&status);
+  while(true) {
+    int status;
+    pid_t pid = wait(&status);
+
+    if(-1 == pid) {
+      if(ECHILD == errno) break; // No children anymore.
+      if(EINTR  == errno) continue;
+    }
+  }
   
   return 0;
 }
